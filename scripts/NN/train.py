@@ -1,0 +1,49 @@
+# -*- coding:utf-8 -*-
+
+import os
+import sys
+import math
+
+import numpy as np
+import tensorflow as tf
+
+from .model.neural_network import NeuralNetwork
+
+class Train(object):
+
+    def __init__(self, train_data, train_label, lr_rate, episode_num, save_name):
+        self.train_data = train_data
+        self.train_label = train_label
+
+        self.nn = NeuralNetwork(784)
+        self.nn.set_model(lr_rate)
+
+        self.episode_num = episode_num
+        self.save_name = save_name
+        self.step = self.episode_num/10
+
+    
+    def __call__(self):
+        # -- begin training --
+        with tf.Session() as sess:
+            saver = tf.train.Saver()
+            init = tf.global_variables_initializer()
+            sess.run(init)
+            try:
+                for i in range(1, self.episode_num+1):
+                    if i%self.step==0: 
+                        bar = ('=' * int(i/self.step) ) + (' ' * (int(self.episode_num/self.step-int(i/self.step)))) 
+                        print('\r### begin episode[{0}] {1}% ({2}/{3})'.format(bar, int((i/self.step)/(self.episode_num/self.step)*100), i, self.episode_num), end='') 
+                    elif i==1:
+                        bar = ('=' * 0 ) + (' ' * (int(self.episode_num/self.step))) 
+                        print('\r### begin episode[{0}] {1}% ({2}/{3})'.format(bar, int((i/self.step)/(self.episode_num/self.step)*100), 0, self.episode_num), end='') 
+
+                    batch_data = self.train_data[np.random.choice(self.train_data.shape[0], 100, replace=False)]
+                    batch_label = self.train_label[np.random.choice(self.train_label.shape[0], 100, replace=False)]
+
+                    _ = self.nn.train(sess, batch_data, batch_label)
+
+                saver.save(sess, self.save_name)
+        
+            except KeyboardInterrupt:
+                pass
