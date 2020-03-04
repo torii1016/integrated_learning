@@ -2,8 +2,6 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
-print(mnist.train.images.shape)
-"""
 # モデルの作成
 # 画像データをxとする
 x = tf.placeholder(tf.float32, [None, 784])
@@ -40,4 +38,3 @@ for i in range(1000):
     #boole値を0もしくは1に変換して平均値をとる、これを正解率とする
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-"""
