@@ -11,11 +11,11 @@ from .model.neural_network import NeuralNetwork
 
 class Train(object):
 
-    def __init__(self, train_data, train_label, lr_rate, episode_num, save_name):
+    def __init__(self, train_data, train_label, lr_rate, episode_num, scope_name, save_name):
         self.train_data = train_data
         self.train_label = train_label
 
-        self.nn = NeuralNetwork(784)
+        self.nn = NeuralNetwork(784, scope_name)
         self.nn.set_model(lr_rate)
 
         self.episode_num = episode_num
@@ -60,9 +60,9 @@ class Train(object):
 
                     accuracy = self.nn.validation(sess, val_data, val_label)
                     self.accuracy_list.append(accuracy)
-                    print( "episode: {},  accuracy: {}".format(i, accuracy))
+                    #print( "episode: {},  accuracy: {}".format(i, accuracy))
 
-                #saver.save(sess, self.save_name)
+                saver.save(sess, self.save_name)
         
             except KeyboardInterrupt:
                 pass

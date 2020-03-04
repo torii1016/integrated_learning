@@ -26,11 +26,11 @@ class _network(Layers):
 
 class NeuralNetwork(object):
     
-    def __init__(self, input_dim):
+    def __init__(self, input_dim, scope_name):
         #self.network_layer = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10]
-        self.network_layer = [10]
+        self.network_layer = [20, 20, 10]
         self.input_dim = input_dim
-        self.network = _network(['NN'], self.network_layer)
+        self.network = _network([scope_name], self.network_layer)
         
     def set_model(self, lr):
         
@@ -55,6 +55,15 @@ class NeuralNetwork(object):
         self.v_s_wo_train = self.network.set_model(self.input, is_training = False, reuse = True)
         self.correct_prediction = tf.equal(tf.argmax(self.v_s_wo_train,1), tf.argmax(self.target_val,1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
+    
+    def set_test_model(self):
+
+        self.input = tf.placeholder(tf.float32, [None, self.input_dim])
+        self.target_val = tf.placeholder(tf.float32, [None, 10])
+
+        self.v_s_test = self.network.set_model(self.input, is_training = False, reuse = True)
+        self.correct_prediction = tf.equal(tf.argmax(self.v_s_test,1), tf.argmax(self.target_val,1))
+        self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 
 
     def train(self, sess, input_data, target_val):
@@ -64,6 +73,12 @@ class NeuralNetwork(object):
         return _, error
 
     def validation(self, sess, input_data, target_val):
+        feed_dict = {self.input: input_data,
+                     self.target_val: target_val}
+        _ = sess.run([self.accuracy], feed_dict = feed_dict)
+        return _
+
+    def test(self, sess, input_data, target_val):
         feed_dict = {self.input: input_data,
                      self.target_val: target_val}
         _ = sess.run([self.accuracy], feed_dict = feed_dict)
