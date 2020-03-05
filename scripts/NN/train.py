@@ -35,6 +35,7 @@ class Train(object):
             saver = tf.train.Saver()
             init = tf.global_variables_initializer()
             sess.run(init)
+
             try:
                 for i in range(1, self.episode_num+1):
                     """

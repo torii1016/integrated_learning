@@ -14,7 +14,6 @@ class _network(Layers):
         self.layer_channels = layer_channels
 
     def set_model(self, inputs, is_training = True, reuse = False):
-
         h  = inputs
         # fully connect
         with tf.variable_scope(self.name_scopes[0], reuse = reuse):
@@ -24,13 +23,27 @@ class _network(Layers):
 
         return tf.nn.softmax(lin)
 
+    def set_model_feature(self, inputs, output_layer, reuse = True):
+        h  = inputs
+        # fully connect
+        with tf.variable_scope(self.name_scopes[0], reuse = reuse):
+            for i in range(output_layer):
+                lin = linear(i, h, self.layer_channels[i])
+                h = lrelu(lin)
+
+        return lin
+
 class IntegrateNeuralNetwork(object):
     
-    def __init__(self, input_dim, scope_name):
+    def __init__(self, input_dim, integrate_layper, scope_names):
         #self.network_layer = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10]
         self.network_layer = [20, 20, 10]
         self.input_dim = input_dim
-        self.network = _network([scope_name], self.network_layer)
+        self.integrate_layper = integrate_layper
+        self.network_1 = _network([scope_names[0]], self.network_layer)
+        self.network_2 = _network([scope_names[1]], self.network_layer)
+        self.network_3 = _network([scope_names[2]], self.network_layer)
+        self.network_4 = _network([scope_names[3]], self.network_layer)
         
     def set_model(self, lr):
         
@@ -46,13 +59,18 @@ class IntegrateNeuralNetwork(object):
         self.target_val = tf.placeholder(tf.float32, [None, 10])
 
         # -- set network ---
-        self.v_s = self.network.set_model(self.input, is_training = True, reuse = False)
+        self.v_s_1 = self.network_1.set_model_feature(self.input, self.integrate_layper, reuse = False)
+        self.v_s_2 = self.network_2.set_model_feature(self.input, self.integrate_layper, reuse = False)
+        self.v_s_3 = self.network_3.set_model_feature(self.input, self.integrate_layper, reuse = False)
+        self.integrate_1_2 = tf.concat([self.v_s_1, self.v_s_2], 1)
+        self.integrated_input = tf.concat([self.integrate_1_2, self.v_s_3], 1)
+        self.v_s = self.network_4.set_model(self.integrated_input, is_training = True, reuse = False)
 
         self.cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.target_val * tf.log(self.v_s), reduction_indices=[1]))
-        self.train_op = tf.train.GradientDescentOptimizer(self.lr).minimize(self.cross_entropy, var_list = self.network.get_variables())
+        self.train_op = tf.train.GradientDescentOptimizer(self.lr).minimize(self.cross_entropy, var_list = self.network_4.get_variables())
 
         # -- for test --
-        self.v_s_wo_train = self.network.set_model(self.input, is_training = False, reuse = True)
+        self.v_s_wo_train = self.network_4.set_model(self.integrated_input, is_training = False, reuse = True)
         self.correct_prediction = tf.equal(tf.argmax(self.v_s_wo_train,1), tf.argmax(self.target_val,1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
     
@@ -61,7 +79,13 @@ class IntegrateNeuralNetwork(object):
         self.input = tf.placeholder(tf.float32, [None, self.input_dim])
         self.target_val = tf.placeholder(tf.float32, [None, 10])
 
-        self.v_s_test = self.network.set_model(self.input, is_training = False, reuse = True)
+        self.v_s_1 = self.network_1.set_model_feature(self.input, self.integrate_layper, reuse = False)
+        self.v_s_2 = self.network_2.set_model_feature(self.input, self.integrate_layper, reuse = False)
+        self.v_s_3 = self.network_3.set_model_feature(self.input, self.integrate_layper, reuse = False)
+        self.integrate_1_2 = tf.concat([self.v_s_1, self.v_s_2], 1)
+        self.integrated_input = tf.concat([self.integrate_1_2, self.v_s_3], 1)
+
+        self.v_s_test = self.network_4.set_model(self.integrated_input, is_training = False, reuse = True)
         self.correct_prediction = tf.equal(tf.argmax(self.v_s_test,1), tf.argmax(self.target_val,1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 

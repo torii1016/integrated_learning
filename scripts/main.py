@@ -6,6 +6,7 @@ import tensorflow as tf
 from NN.train import Train
 from NN.test import Test
 from NN.train_multi import TrainMulti
+from NN.train_integrate import TrainIntegrate
 #from show_data import ShowData
 
 def train_single(data, label, scope_name, model_name):
@@ -22,6 +23,10 @@ def train_multi(datas, labels, scope_names, model_names):
     train_multi.set_dataset_3(datas[2], labels[2], scope_names[2], model_names[2])
     train_multi()
 
+def train_integrate(data, label, scope_names, model_names):
+    train_integrate = TrainIntegrate(data, label, 0.5, 100, scope_names, model_names, "save_4.dump")
+    train_integrate()
+
 def test_single(data, label, scope_name, model_name):
     test = Test(data, label, scope_name, model_name)
     test()
@@ -36,12 +41,14 @@ def main():
     train_data_1, train_data_2, train_data_3, train_data_4 = np.split(train_data, 4)
     train_label_1, train_label_2, train_label_3, train_label_4 = np.split(train_label, 4)
     
-    train_single(train_data, train_label, "NN", "save.dump")
+    #train_single(train_data, train_label, "NN", "save.dump")
 
-    train_multi([train_data_1, train_data_2, train_data_3], [train_label_1, train_label_2, train_label_3],
-        ['NN_1', 'NN_2', 'NN_3'], ["save_1.dump", "save_2.dump", "save_3.dump"])
+    #train_multi([train_data_1, train_data_2, train_data_3], [train_label_1, train_label_2, train_label_3],
+    #    ['NN_1', 'NN_2', 'NN_3'], ["save_1.dump", "save_2.dump", "save_3.dump"])
+    train_integrate(train_data_4, train_label_4, ['NN_1', 'NN_2', 'NN_3', 'NN_4'], ["save_1.dump", "save_2.dump", "save_3.dump"])
 
-    test_single(train_data, train_label, "NN", "save.dump")
+
+    #test_single(train_data, train_label, "NN", "save.dump")
     #test_single(train_data, train_label, "NN_1", "save_1.dump")
     #test_single(train_data, train_label, "NN_2", "save_2.dump")
     #test_single(train_data, train_label, "NN_3", "save_3.dump")
