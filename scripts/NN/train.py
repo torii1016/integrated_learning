@@ -64,6 +64,7 @@ class Train(object):
                     #print( "episode: {},  accuracy: {}".format(i, accuracy))
 
                 saver.save(sess, self.save_name)
+                print(self.nn.network.get_variables())
         
             except KeyboardInterrupt:
                 pass

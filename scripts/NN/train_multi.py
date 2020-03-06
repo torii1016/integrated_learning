@@ -62,13 +62,14 @@ class TrainMulti(object):
                     self.loss_list.append(error)
                     #print( "episode: {},  error: {}".format(i, error))
 
-                    choice_id = np.random.choice(train_data.shape[0], 100, replace=False)
-                    val_data = train_data[choice_id]
-                    val_label = train_label[choice_id]
+                    #choice_id = np.random.choice(train_data.shape[0], 100, replace=False)
+                    #val_data = train_data[choice_id]
+                    #val_label = train_label[choice_id]
 
-                    accuracy = nn.validation(sess, val_data, val_label)
-                    self.accuracy_list.append(accuracy)
-                    #print( "episode: {},  accuracy: {}".format(i, accuracy))
+
+                accuracy = nn.validation(sess, train_data, train_label)
+                self.accuracy_list.append(accuracy)
+                print( "episode: {},  accuracy: {}".format(i, accuracy))
 
                 saver.save(sess, save_name)
         

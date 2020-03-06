@@ -35,9 +35,15 @@ class TrainIntegrate(object):
     def __call__(self):
         # -- begin training --
         with tf.Session() as sess:
+            print("ok1")
             saver = tf.train.Saver()
             init = tf.global_variables_initializer()
             sess.run(init)
+            print("ok2")
+            saver.restore(sess, self.model_names[0])
+
+            print("ok3")
+            return
 
             try:
                 for i in range(1, self.episode_num+1):

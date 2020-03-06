@@ -65,6 +65,10 @@ class NeuralNetwork(object):
         self.correct_prediction = tf.equal(tf.argmax(self.v_s_test,1), tf.argmax(self.target_val,1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 
+        print("----------------------------")
+        print(self.network.get_variables())
+        print("----------------------------")
+
 
     def train(self, sess, input_data, target_val):
         feed_dict = {self.input: input_data,

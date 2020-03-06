@@ -15,22 +15,18 @@ class Test(object):
         self.test_data = test_data
         self.test_label = test_label
 
-
         self.nn = NeuralNetwork(784, scope_name)
-        self.nn.set_test_model()
+        self.nn.set_model(0.5)
 
         self.model_name = model_name
         
     
     def __call__(self):
-        # -- begin training --
-        with tf.Session() as sess:
-            saver = tf.train.Saver()
-            saver.restore(sess, self.model_name)
-            try:
-                accuracy = self.nn.test(sess, self.test_data, self.test_label)
 
-                print( "accuracy: {}".format(accuracy) )
-        
-            except KeyboardInterrupt:
-                pass
+        sess = tf.Session()
+        saver = tf.train.Saver()
+        saver.restore(sess, self.model_name)
+
+        accuracy = self.nn.test(sess, self.test_data, self.test_label)
+
+        print( "accuracy: {}".format(accuracy) )
