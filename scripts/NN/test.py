@@ -15,7 +15,7 @@ class Test(object):
         self.test_data = test_data
         self.test_label = test_label
 
-        self.nn = NeuralNetwork(784, scope_name)
+        self.nn = NeuralNetwork(784, 2, scope_name)
         self.nn.set_model(0.5)
 
         self.model_name = model_name
@@ -30,3 +30,6 @@ class Test(object):
         accuracy = self.nn.test(sess, self.test_data, self.test_label)
 
         print( "accuracy: {}".format(accuracy) )
+
+        #feature = self.nn.get_feature(sess, [self.test_data[0]])
+        #print(feature)

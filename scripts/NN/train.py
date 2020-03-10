@@ -15,7 +15,7 @@ class Train(object):
         self.train_data = train_data
         self.train_label = train_label
 
-        self.nn = NeuralNetwork(784, scope_name)
+        self.nn = NeuralNetwork(784, 1, scope_name)
         self.nn.set_model(lr_rate)
 
         self.episode_num = episode_num
@@ -64,7 +64,6 @@ class Train(object):
                     #print( "episode: {},  accuracy: {}".format(i, accuracy))
 
                 saver.save(sess, self.save_name)
-                print(self.nn.network.get_variables())
         
             except KeyboardInterrupt:
                 pass
